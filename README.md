@@ -1,6 +1,8 @@
 Django LIMS
 ===========
 
+A Django-based laboratory information management system
+
 Dependencies
 ------------
 
