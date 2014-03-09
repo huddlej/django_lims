@@ -3,7 +3,7 @@ from models import Clone
 
 
 class CloneAdmin(admin.ModelAdmin):
-    list_display = ("name", "accessions")
+    list_display = ("name", "get_accessions")
 
 
 admin.site.register(Clone, CloneAdmin)

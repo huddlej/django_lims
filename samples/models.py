@@ -8,9 +8,14 @@ class Clone(models.Model):
     cellular environment like a bacterium or yeast.
     """
     name = models.CharField(max_length=100)
+    accessions = models.CharField(max_length=200, null=True, blank=True)
 
     def __unicode__(self):
         return self.name
 
-    def accessions(self):
-        return u"".join(ncbi.search_clone_by_name(self.name))
+    def get_accessions(self):
+        if not self.accessions:
+            self.accessions = u"".join(ncbi.search_clone_by_name(self.name))
+            self.save()
+
+        return self.accessions
