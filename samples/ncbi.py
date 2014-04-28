@@ -4,8 +4,14 @@ Given a clone name, report any matching accessions in NCBI's nucleotide
 database.
 """
 from Bio import Entrez
+import csv
 import urllib2
 Entrez.email = "jlhudd@uw.edu"
+
+import os
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "django_lims.settings")
+
+from models import SequencedClone
 
 
 def search_clone_by_name(clone_name):
@@ -47,3 +53,22 @@ def search_clone_by_name(clone_name):
         accessions = ["ncbi_lookup_failed"]
 
     return accessions
+
+
+def load_report_records(report_filename):
+    """
+    Load records from an NCBI CloneDB report into the database.
+    """
+    clones = []
+
+    with open(report_filename, "r") as report_fh:
+        reader = csv.DictReader(report_fh, delimiter="\t")
+        for row in reader:
+            if row["Stdn"] == "Y":
+                clone = SequencedClone()
+                for key, value in row.iteritems():
+                    setattr(clone, key.lower(), value)
+
+                clones.append(clone)
+
+    SequencedClone.objects.bulk_create(clones)
